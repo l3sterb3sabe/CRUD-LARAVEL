@@ -47,7 +47,7 @@ Route::post('/alterUrlDelete', function(){
 });
 
 Route::post('/alterUrlRead', function(){
-	return redirect('/read/'. $_POST['typeSearch']);
+	return redirect('/read/'. $_POST['typeSearch']. '?q='. $_POST['q']);
 });
 
 Route::get('/read/{type}', ['uses' =>'CrudController@search']);

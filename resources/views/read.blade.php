@@ -18,19 +18,23 @@
 			<option value = age>Age</option>
 			<option value = address>Address</option>
 		</select>
+		<input type = "text" maxlenght = 20 id = "q" name = "q">
 
 		<input type = "submit" name = "submit" value = "Search By">
 
 		<?php
 
 			$people = DB::select('select * from people');
-			echo '<hr>';
+			echo '<table>';
 			foreach($people as $pips){
-				echo '<h2>'.$pips->name.'</h2>';
-				echo '<h4>Age : '.$pips->age.'</h4>';
-				echo '<h4>Address: '.$pips->address.'</h4>';
-				echo '<hr>';
+				echo '<tr>';
+				echo '<td>'.$pips->name.'</td>';
+				echo '<td>'.$pips->age.'</td>';	
+				echo '<td>'.$pips->address.'</td>';
+				echo '</tr>';
 			}
+
+			echo '</table>';
 			echo '<input type = "hidden" name = "typeSearch" id = "typeSearch">';
 		?>
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">

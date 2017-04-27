@@ -49,21 +49,23 @@ class CrudController extends Controller
 	}
 
 	public function search($type){
-		$people = DB::select('select '.$type. ' from people ');
+		$q = $_GET['q'];
+		$people = DB::select('select * from people where '.$type.'=?', [$q]);
+		echo '<table>';
+		echo '<th>Name</th>';
+		echo '<th>Age</th>';
+		echo '<th>Address</th>';
 		foreach($people as $pips){
-			echo $pips->$type . '<br> <br>';
+			echo '<tr>';
+			echo '<td>'.$pips->name. '</td>';
+			echo '<td>'.$pips->age. '</td>';
+			echo '<td>'.$pips->address . '</td>';
+			echo '</tr>';
 		}
+
+		echo '</table>';
 	}
 
-	public function validate($input){
 
-		$rules = array(
-			'name' => 'Required|Alpha',
-			'age' => 'Required|Integer',
-			'address' => 'Required'
-			);
-
-		return Validator::make($input, $rules);
-	}
 
 }
