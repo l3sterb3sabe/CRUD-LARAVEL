@@ -36,7 +36,7 @@
 
 			echo '</table>';
 			echo '<input type = "hidden" name = "typeSearch" id = "typeSearch">';
-		?>
+		?>	
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
 </body>

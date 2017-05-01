@@ -10,14 +10,15 @@ class CrudController extends Controller
     //
 
     public function write(){
-    	$name = $_POST['name'];
-		$age = $_POST['age'];
-		$address = $_POST['address'];
+    	$name = $_POST['addName'];
+		$age = $_POST['addAge'];
+		$address = $_POST['addAddress'];
 		echo $name . ' ' . $age . ' ' .$address;
 
 		DB::insert('insert into people(name, age, address) values(?,?,?)', [$name, $age, $address]);
 
 		echo '<script>alert("Successfully Created")</script>';
+		return redirect("/crud");
     }
 
     public function load(){
@@ -41,11 +42,13 @@ class CrudController extends Controller
 		DB::update('update people set address = ? where id=?', [$address,$id]);
 
 		echo '<script>alert(Updated Successfully);</script>';
+		return redirect("/crud");
 	}	
 
 	public function delete($id){
 		DB::table('people')->where('id', '=', $id)->delete();
 		echo '<script>alert("Deleted Successfully");</script>';
+		return redirect('/crud');
 	}
 
 	public function search($type){
