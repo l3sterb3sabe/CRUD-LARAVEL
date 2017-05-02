@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<?php
-	session_start();
-	if(!isset($_SESSION['query'])){
-		$_SESSION['query'] = "select * from people";
-	}
-?>
+
 <html>
 <head>
 	<title>crud</title>
 	<script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<script type = "text/javascript">
 		
 		function btnHandler(btn){
@@ -22,12 +18,8 @@
 
 		function selectReturn(id){
 
-			document.getElementById("typeSearch").value = id.value;
+			$("#typeSearch").val(id.value);
 
-		}
-
-		function search(){
-			
 		}
 
 		$(function(){
@@ -49,7 +41,23 @@
 					btnHandler(this);
 				}
 			});
+
+			$(".update").click(function(e){
+				e.preventDefault();
+				$("#_btnType").val(this.name);
+				$("#_dataId").val(this.id);
+				var name = $('td#' + this.id + '.name').html();
+				var age = $('td#' + this.id + '.age').html();
+				var address = $('td#' + this.id + '.address').html();
+				$("#_updateName").val(name);
+				$("#_updateAge").val(age);
+				$("#_updateAddress").val(address);
+				$("#tableForm").submit();
+			});
 		});
+
+			
+		
 		
 	
 	</script>
@@ -123,13 +131,16 @@
 		
 </head>
 <body>
+
+	<a href = "/crud"> <button class = "button">Home</button> </a>
+	<a href = "/login"> <button class = "button">Login</button></a>
 	<form action = "/crud">
 		<select name = "searchBy" id = "searchBy" onchange = "selectReturn(this)">
 				<option value = name selected>Name</option>
-				<option value = age>Age</option>
+				<option value = age>Age</option>P
 				<option value = address>Address</option>
 			</select>
-			<input type = "text" maxlenght = 20 id = "q" name = "q">
+			<input type = "text"  maxlenght = 20 id = "q" name = "q">
 
 			<button class = "button" onclick = "search()">Search</button>
 	</form>
@@ -151,10 +162,10 @@
 				echo '<th>Actions</th>';
 				foreach($people as $pips){
 					echo '<tr id = '.$pips->id.'>';
-					echo '<td class = "edit" id = "name">'.$pips->name.'</td>';
-					echo '<td class = "edit" id = "age">'.$pips->age.'</td>';	
-					echo '<td class = "edit" id = "address">'.$pips->address.'</td>';
-					echo '<td><button class="button update" name = "update" id = "'.$pips->id.'" onclick = "btnHandler(this)">Update</button>
+					echo '<td ondblclick = "this.contenteditale=true" class = "edit name" id = "'.$pips->id.'">'.$pips->name.'</td>';
+					echo '<td ondblclick = "this.contenteditale=true" class = "edit age" id = "'.$pips->id.'">'.$pips->age.'</td>';	
+					echo '<td ondblclick = "this.contenteditale=true"class = "edit address" id = "'.$pips->id.'">'.$pips->address.'</td>';
+					echo '<td><button class="button update" name = "update" id = "'.$pips->id.'">Update</button>
 								<button class="button btnDelete delete" name = "delete" id = "'.$pips->id.'">Delete</button></td>';
 
 					echo '</tr>';
@@ -165,7 +176,10 @@
 				echo '<input type = "hidden" name = "typeSearch" id = "typeSearch">';
 			?>
 		
-		<input type = "hidden" name = "typeSearch" id = "typeSearch">;
+		<input type = "hidden" name = "_updateName" id = "_updateName">
+		<input type="hidden" name = "_updateAge" id = "_updateAge">
+		<input type="hidden" name = "_updateAddress" id = "_updateAddress">
+		<input type = "hidden" name = "typeSearch" id = "typeSearch">
 		<input type="hidden" name = "_dataId" id = "_dataId">
 		<input type="hidden" name = "_btnType" id = "_btnType">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">

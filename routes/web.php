@@ -17,6 +17,12 @@ Route::get('/crud', function () {
     return view('crud')->with('query', 'select * from people');
 });
 
+Route::get('login', function(){
+	return view('login');
+});
+
+Route::post('loginNow', 'CrudController@login');
+
 Route::get('/read', function () {
     return view('read');
 });
@@ -29,12 +35,14 @@ Route::get('/update/{id}', function($id){
 	return view('updateDB')->with('id', $id);
 });
 
-Route::post('/updateDB/{id}', ['uses' => 'CrudController@update']);
+Route::get('/updateDB/{id}/{name}/{age}/{address}', ['uses' => 'CrudController@update']);
 
 Route::post('/alterUrl', function(){
 
-	if($_POST['_btnType'] == 'update')
-		return redirect('update/'.$_POST['_dataId']);
+	if($_POST['_btnType'] == 'update'){
+		return redirect('updateDB/' . $_POST['_dataId'] . '/' .$_POST['_updateName']. '/' . $_POST['_updateAge'] . '/' . $_POST['_updateAddress']);
+	}
+		
 	else if($_POST['_btnType'] == 'delete')
 		return redirect('delete/'.$_POST['_dataId']);
 
