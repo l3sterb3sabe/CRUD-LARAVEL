@@ -4,63 +4,8 @@
 <head>
 	<title>crud</title>
 	<script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-	<script type = "text/javascript">
-		
-		function btnHandler(btn){
-			document.getElementById("_btnType").value = btn.name;
-			document.getElementById("_dataId").value = btn.id;
-			if(btn.name == "delete"){
-				$("#tableForm").submit();
-			}
-
-		}
-
-		function selectReturn(id){
-
-			$("#typeSearch").val(id.value);
-
-		}
-
-		$(function(){
-			var $td = $(".edit"); 
-			$td.on({ 
-				
-					"dblclick" : function(){
-					$td.not(this).prop("contenteditable", false);
-	      			$(this).prop("contenteditable", true);
-
-				}
-			});
-
-		});
-		$(document).ready(function(){
-			$(".delete").click(function(e){
-				e.preventDefault();
-				if(confirm("Are you sure to delete item?") == true){
-					btnHandler(this);
-				}
-			});
-
-			$(".update").click(function(e){
-				e.preventDefault();
-				$("#_btnType").val(this.name);
-				$("#_dataId").val(this.id);
-				var name = $('td#' + this.id + '.name').html();
-				var age = $('td#' + this.id + '.age').html();
-				var address = $('td#' + this.id + '.address').html();
-				$("#_updateName").val(name);
-				$("#_updateAge").val(age);
-				$("#_updateAddress").val(address);
-				$("#tableForm").submit();
-			});
-		});
-
-			
-		
-		
 	
-	</script>
+
 
 	<style>
 		ul {
@@ -126,56 +71,72 @@
 		td[contenteditable=true] { outline: 2px solid #0af; }	
 		td, th { padding:5px; border: 1px solid #ddd; }
 
+		.search {background-color: blue;}
+
+		input[type=text], select, label{
+			height : 30px;
+			font-size: 16px;
+		}
 	</style>
 		
 		
 </head>
 <body>
+	<h1><?php $search ?></h1>
+	<button class = "button" onclick = "test()">Home</button> <br/><br/>
+	<!--<a href = "/login"> <button class = "button">Login</button></a>-->
 
-	<a href = "/crud"> <button class = "button">Home</button> </a>
-	<a href = "/login"> <button class = "button">Login</button></a>
+			<input type = "text"  maxlenght = 20 id = "q" name = "q" onkeyup = "updateTable()" placeholder = "Search...">
+
+			<!--<button class = "button search" onclick = "search()">Search</button> -->
+	
 	<form action = "/crud">
-		<select name = "searchBy" id = "searchBy" onchange = "selectReturn(this)">
+		<select name = "sortBy" id = "sortBy" onchange = "selectReturn(this)">
 				<option value = name selected>Name</option>
-				<option value = age>Age</option>P
+				<option value = age>Age</option>
 				<option value = address>Address</option>
-			</select>
-			<input type = "text"  maxlenght = 20 id = "q" name = "q">
-
-			<button class = "button" onclick = "search()">Search</button>
+		</select>
+		<button >Sort</button>
 	</form>
 	<form  id = "tableForm" method = "POST" action = "/alterUrl">
 
 			<?php
 				if(isset($_GET['searchBy'])){
 					if(isset($_GET['q'])){
-						$query = 'select * from people where ' . $_GET['searchBy'] . '="' .$_GET['q'].'"';
+						$query = 'select * from people where name like "%' .$_GET['q'].'%" or age like "%' .$_GET['q'].'%" or address like "%'.$_GET['q'] . '%"';
 					}
 				}else{
 					$query = "select * from people";
 				}
+				if(isset($_GET['sortBy'])){
+					$query = $query . ' order by ' . $_GET['sortBy'];
+				}
 				$people = DB::select($query);
-				echo '<center><table>';
+				echo '<center><table id = "recordTable">';
 				echo '<th>Name</th>';
 				echo '<th>Age</th>';
 				echo '<th>Address</th>';
 				echo '<th>Actions</th>';
 				foreach($people as $pips){
-					echo '<tr id = '.$pips->id.'>';
-					echo '<td ondblclick = "this.contenteditale=true" class = "edit name" id = "'.$pips->id.'">'.$pips->name.'</td>';
-					echo '<td ondblclick = "this.contenteditale=true" class = "edit age" id = "'.$pips->id.'">'.$pips->age.'</td>';	
-					echo '<td ondblclick = "this.contenteditale=true"class = "edit address" id = "'.$pips->id.'">'.$pips->address.'</td>';
-					echo '<td><button class="button update" name = "update" id = "'.$pips->id.'">Update</button>
-								<button class="button btnDelete delete" name = "delete" id = "'.$pips->id.'">Delete</button></td>';
+					echo '<tr class = "ito" id = '.$pips->id.'>';
+					echo '<td ondblclick = "this.contentEditable=true" onblur = "blurSave(this)" class = "edit name" id = "'.$pips->id.'">'.$pips->name.'</td>';
+					echo '<td ondblclick = "this.contentEditable=true" onblur = "blurSave(this)" class = "edit age" id = "'.$pips->id.'">'.$pips->age.'</td>';	
+					echo '<td ondblclick = "this.contentEditable=true" 	onblur = "blurSave(this)"class = "edit address" id = "'.$pips->id.'">'.$pips->address.'</td>';
+					echo '<td><button class="button btnDelete delete" name = "delete" id = "'.$pips->id.'">Delete</button></td>';
+					// echo '<td><button class="button update" name = "update" id = "'.$pips->id.'">Update</button>
+					// 			<button class="button btnDelete delete" name = "delete" id = "'.$pips->id.'">Delete</button></td>';
 
 					echo '</tr>';
 
 				}
 
 				echo '</table></center>';
+				if(empty($people)){
+					echo '<center><p>No items to be displayed</p><center>';
+				}
 				echo '<input type = "hidden" name = "typeSearch" id = "typeSearch">';
-			?>
-		
+			
+		?>
 		<input type = "hidden" name = "_updateName" id = "_updateName">
 		<input type="hidden" name = "_updateAge" id = "_updateAge">
 		<input type="hidden" name = "_updateAddress" id = "_updateAddress">
@@ -193,5 +154,94 @@
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 	</form>
 
+	<script type = "text/javascript">
+
+
+		$(document).ready(function(){
+			$(".delete").click(function(e){
+				e.preventDefault();
+				if(confirm("Are you sure to delete item?") == true){
+					btnHandler(this);
+				}
+			});
+
+			$(".update").click(function(e){
+				e.preventDefault();
+				$("#_btnType").val(this.name);
+				$("#_dataId").val(this.id);
+				var name = $('td#' + this.id + '.name').html();
+				var age = $('td#' + this.id + '.age').html();
+				var address = $('td#' + this.id + '.address').html();
+				$("#_updateName").val(name);
+				$("#_updateAge").val(age);
+				$("#_updateAddress").val(address);
+				$("#tableForm").submit();
+			});
+
+			
+		});
+
+		function blurSave(td){
+				$("#_btnType").val("update");
+				$("#_dataId").val(td.id);
+				var name = $('td#' + td.id + '.name').html();
+				var age = $('td#' + td.id + '.age').html();
+				var address = $('td#' + td.id + '.address').html();
+				$("#_updateName").val(name);
+				$("#_updateAge").val(age);
+				$("#_updateAddress").val(address);
+				$("#tableForm").submit();
+		}
+		
+		function btnHandler(btn){
+			document.getElementById("_btnType").value = btn.name;
+			document.getElementById("_dataId").value = btn.id;
+			if(btn.name == "delete"){
+				$("#tableForm").submit();
+			}
+
+		}
+
+		function selectReturn(id){
+
+			$("#typeSearch").val(id.value);
+			alert($("#typeSearch").val());
+
+		}
+
+
+   			 
+		function test(){
+			alert("Hello");
+		}
+
+		function updateTable(){
+			var input, filter, table, tr, tdName, tdAge, tdAddress, i;
+			input = $("#q").val();
+
+			filter = input.toLowerCase();
+			table = document.getElementById("recordTable");
+ 			tr = table.getElementsByTagName("tr");
+
+			for(i = 0;  i<tr.length; i++){
+				//td = tr[i].getElementsByTagname("td")[0];
+				 tdName = tr[i].getElementsByTagName("td")[0];
+				 tdAge = tr[i].getElementsByTagName("td")[1];
+				 tdAddress = tr[i].getElementsByTagName("td")[2];
+
+				
+				if(tdName||tdAge||tdAddress){
+					if((tdName.innerHTML.toLowerCase().indexOf(filter) > -1)||tdAge.innerHTML.toLowerCase().indexOf(filter) > -1||tdAddress.innerHTML.toLowerCase().indexOf(filter) > -1){
+						tr[i].style.display = "";
+					}else{
+						tr[i].style.display = "none";
+					}
+				}
+			}
+		}
+		
+	
+	</script>
+		
 </body>
 </html>

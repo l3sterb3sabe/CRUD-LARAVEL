@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use DB;
+use People;
 
 class CrudController extends Controller
 {
@@ -93,6 +94,12 @@ class CrudController extends Controller
 			 	echo "WRONG";
 			 }
 		}
+	}
+
+
+
+	public function updateDB($id){
+		return view('updateDB')->with('id', $id);
 	}
 
 
